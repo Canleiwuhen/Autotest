@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html style="height: 100%;width:100%" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="multipart/form-data; charset=utf-8" />
+    <title>表格插件</title>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="StringUtil.js"></script>
+    <script type="text/javascript" src="Tag.js"></script>
+    <script type="text/javascript" src="exceltable.js"></script>
+	<link rel="stylesheet" type="text/css" href="exceltable.css"/>
+    <style>
+        .main-table{width: 100%;border-collapse: collapse;margin: 10px 2px;}
+        .main-table td,th{border:0.5px solid #678;padding: 4px;margin: 0}
+        .use-code{border: 3px solid #0e0e0e;padding: 2px;line-height: 24px;background-color: #666;color:white;font-size: 16px}
+    </style>
+</head>
+<body>
+    <div id="table" class="full">
+
+    </div>
+    <div></div>
+    <table class="main-table">
+        <thead>
+            <tr><th>方法</th><th>描述</th><th>测试</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>initExcelTable(options)</td><td>表格初始化,返回封装的对象</td><td><button id="useBtn">调用方式</button></td></tr>
+            <tr><td>getRowData(n)</td><td>获得表格中指定行的数据,n:行数</td><td><input id="getRowData_n" value="1" style="width: 20px"><button id="getRowDataBtn">获得数据</button></td></tr>
+            <tr><td>getData()</td><td>获得表格全部数据</td><td><button id="getDataBtn">获得全部数据</button></td></tr>
+            <tr><td>hideHeader(boolean)</td><td>隐藏或者显示表头,true隐藏,false显示,如果列设置的不是固定宽度，隐藏表头后，列宽会发生变化</td><td><button id="hideHeaderBtn">隐藏/显示</button></td></tr>
+            <tr><td>setRowData(n,data,sec)</td><td>设置某一行的数据</td><td><button id="setRowDataBtn">设置</button></td></tr>
+            <tr><td>setData(list)</td><td>设置整个表格的数据,传入一个数组,超过表格当前行数时会自动添加新行</td><td><!--<button id="setRowDataBtn"></button>--></td></tr>
+            <tr><td>insertRow(n1,n2)</td><td>在第n1行后面插入n2个新行,n2:要新增的行数</td><td>
+                n1:<input id="insertRow_n1" value="0" style="width: 20px">n2:<input id="insertRow_n2" value="1" style="width: 20px"><button id="insertRowBtn">插入</button></td></tr>
+            <tr><td>deleteRow(n1,n2)</td><td>删除从n1行开始(包含n1)后面的n2行,n2:要删除的行数</td><td>
+                n1:<input id="deleteRow_n1" value="1" style="width: 20px">n2:<input id="deleteRow_n2" value="1" style="width: 20px"><button id="deleteRowBtn">删除</button></td></tr>
+            <tr><td>复制行(拓展)</td><td>//得到一行的数据<br>var row1 = obj.getRowData(n1);<br>//将数据设置到另一行<br>obj.setRowData(n2,row1)</td><td></td></tr>
+            <tr><td>剪切行(拓展)</td><td>//得到一行的数据<br>var row1 = obj.getRowData(n1);<br>//删除行<br>obj.deleteRow(n1)<br>//创建新行<br>obj.insertRow(n2)<br>//设置新行的数据<br>obj.setRowData(n2+1,row1)</td><td></td></tr>
+        </tbody>
+    </table>
+
+    <pre class="use-code">
+        var obj = $("#table").initExcelTable({
+            //是否显示列头
+            showHeader:true,
+            columns: [
+                {
+                    //设置表头
+                    header:{text:"姓名",css:{'font-weight':'bold'}},
+                    //设置列名
+                    fieldName:'username',
+                    //设置单元格类型，目前支持input(输入框)、select(下拉框)、checkbox、radio
+                    type:"input",width:200,emptyText:"请输入姓名...",
+                    cellStyle:{align:'center'},css:{background: '#cff'}},
+                {header:{text:"年龄",css:{'font-weight':'bold',background:'#9fe'}},fieldName:'age',type:"input",width:200,emptyText:"输入数字...",readonly:true,
+                    cellStyle:{align:'right'},css:{background: '#0cf'}},
+                {header:{text:"出生年月",css:{'font-weight':'bold'}},fieldName:'birth',type:"input",width:200,css:{background: '#9f9'}},
+                {header:{text:"工作",css:{'font-weight':'bold'}},fieldName:'job',type:"select",width:300,
+                    //枚举项
+                    list:selectOptions,readonly:true,defaultValue:'key1'},
+                {header:{text:"副业",css:{'font-weight':'bold'}},fieldName:'job2',type:"select",width:150,list:selectOptions,defaultValue:'key1'},
+                {header:{text:"工作地点",css:{'font-weight':'bold'}},fieldName:'place',type:"input"},
+                {header:{text:"兴趣爱好",css:{'font-weight':'bold'}},fieldName:'love',type:"checkbox",defaultValue:'1,2',
+                    //多选项
+                    choices:{1:'音乐',2:'阅读',3:'乒乓球'},readonly:true},
+                {header:{text:"性别",css:{'font-weight':'bold'}},fieldName:'sex',type:"radio",defaultValue:'1',choices:{1:'男',2:'女'}},
+            ],
+            //初始化行数
+            row: 4
+        });
+    </pre>
+    <textarea id="data" style="width: 500px" rows="25"></textarea>
+    <script>
+        var selectOptions = [
+            {k:'',v:'请选择'},
+            {k:'java',v:'java开发'},
+            {k:'python',v:'python开发'},
+            {k:'rs',v:'人事'},
+        ];
+        var list =[
+            {username:'张三',age:24,birth:'1996-06-07',job:'java',job2:'java',place:'武汉',love:'1,3'},
+            {username:'杨薇',age:28,birth:'1992-06-07',job:'python',job2:'java',place:'武汉',love:'1',sex:'2'},
+            {username:'李四',age:26,birth:'1994-06-07',job:'java',job2:'',place:'长沙',love:'2',sex:'1'},
+            {username:'袁婷',age:25,birth:'1995-06-07',job:'rs',job2:'',place:'广州',love:'2,3',sex:'2'},
+        ];
+
+
+        var obj = $("#table").initExcelTable({
+            //是否显示列头
+            showHeader:true,
+            columns: [
+                {
+                    //设置表头
+                    header:{text:"姓名",css:{'font-weight':'bold'}},
+                    //设置列名
+                    fieldName:'username',
+                    //设置单元格类型，目前支持input(输入框)、select(下拉框)、checkbox、radio
+                    type:"input",width:200,emptyText:"请输入姓名...",
+                    cellStyle:{align:'center'},css:{background: '#cff'}},
+                {header:{text:"年龄",css:{'font-weight':'bold',background:'#9fe'}},fieldName:'age',type:"input",width:200,emptyText:"输入数字...",readonly:true,
+                    cellStyle:{align:'right'},css:{background: '#0cf'}},
+                {header:{text:"出生年月",css:{'font-weight':'bold'}},fieldName:'birth',type:"input",width:200,css:{background: '#9f9'}},
+                {header:{text:"工作",css:{'font-weight':'bold'}},fieldName:'job',type:"select",width:300,
+                    //枚举项
+                    list:selectOptions,readonly:true,defaultValue:'key1'},
+                {header:{text:"副业",css:{'font-weight':'bold'}},fieldName:'job2',type:"select",width:150,list:selectOptions,defaultValue:'key1'},
+                {header:{text:"工作地点",css:{'font-weight':'bold'}},fieldName:'place',type:"input"},
+                {header:{text:"兴趣爱好",css:{'font-weight':'bold'}},fieldName:'love',type:"checkbox",defaultValue:'1,2',
+                    //多选项
+                    choices:{1:'音乐',2:'阅读',3:'乒乓球'},readonly:true},
+                {header:{text:"性别",css:{'font-weight':'bold'}},fieldName:'sex',type:"radio",defaultValue:'1',choices:{1:'男',2:'女'}},
+            ],
+            //初始化行数
+            row: 1
+        });
+        //设置表格数据
+        obj.setData(list);
+        $("#getDataBtn").click(function(){
+            $("#data").val('');
+            var data = obj.getData();
+            $(document.documentElement).animate({scrollTop:document.documentElement.scrollHeight},300);
+            setTimeout(function(){
+                $("#data").val(JSON.stringify(data,null,2));
+            },280);
+        });
+        $("#useBtn").click(function(){
+            $(document.documentElement).animate({scrollTop:$(".use-code").offset().top},300);
+        });
+        $("#hideHeaderBtn").click(function(){
+            obj.hideHeader(obj.showHeader);
+        });
+        $("#getRowDataBtn").click(function(){
+            var n = StringUtil.safeToString($("#getRowData_n").val(),'1');
+            console.log(n);
+            alert(JSON.stringify(obj.getRowData(n),null,2));
+        });
+        $("#setRowDataBtn").click(function(){
+            obj.setRowData(1,{job:"python",sex:1,username:"胡歌",age:14,birth:1980,job2:'rs',love:'1,2',place:'上海'});
+        });
+        $("#insertRowBtn").click(function(){
+            var n1 = StringUtil.safeToString($("#insertRow_n1").val(),'1');
+            var n2 = StringUtil.safeToString($("#insertRow_n2").val(),'1');
+            obj.insertRow(n1,n2);
+        });
+        $("#deleteRowBtn").click(function(){
+            var n1 = StringUtil.safeToString($("#deleteRow_n1").val(),'1');
+            var n2 = StringUtil.safeToString($("#deleteRow_n2").val(),'1');
+            obj.deleteRow(n1,n2);
+        });
+    </script>
+</body>

@@ -1,0 +1,50 @@
+.full{width:100%;height:100%;overflow-x: auto;}
+.excel-table{
+    /*table-layout: fixed;*/margin: 0 auto;border-collapse: separate;border-spacing: 0;border: 1px solid #ddd;
+    width: 100%;
+    table-layout: fixed;
+}
+.excel-table td{
+    line-height: 30px;
+    border:1px solid #ddd;
+    font-size: 12px!important;box-sizing: border-box;margin: 0;padding: 0
+}
+
+.excel-table td input{
+    line-height: 30px;height: 30px;border: none;width: 100%;text-indent: 0.5em;padding: 0;margin: 0;outline: none;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+.excel-table td label{
+    cursor: pointer;padding: 0 5px 0 2px;
+}
+.excel-table td input[type=checkbox]{
+    line-height: 30px;height: 15px;border: none;width: 15px;padding: 0;margin: 0 0 0 2px;box-sizing: border-box;outline: none;
+}
+.excel-table td input[type=radio]{
+    line-height: 30px;height: 15px;border: none;width: 15px;padding: 0;margin: 0 0 0 2px;box-sizing: border-box;outline: none;
+}
+.excel-table td textarea{
+    border: none;outline: none;height: 100%;width: 100%;resize: none;padding: 0;margin: 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box; /* Firefox */
+    -moz-box-sizing: border-box;
+}
+.excel-table td select{
+    width: 100%;height:30px;border: none;outline: none;
+}
+.excel-table .excel-table-checkbox-div{
+    max-height: 30px;overflow-x: hidden;
+}
+
+/*.excel-table-div{}*/
+/*.excel-table-div, .hover{cursor: crosshair}*/
+
+
+
+.td-hover{border-color: #ff8a1e!important;}
+.pl10{padding-left:10px!important;}
+
+.gray{background: #e0e0e0;}
+.cent{text-align: center}

@@ -1,0 +1,13 @@
+[{"num":"","sampleType":"S051-全血","Lane":"L01","index":"1","productNum":"DX1331","tireType":"单胎","qualityControl":"否","CNV_info":"del(2q32.3-q33.3,8.28Mb)","CNV_section_info":"del(2:196925121-205206940)","test13":"T13高危","test18":"T18高危","test21":"T21高危","test_sex":"其它复杂异常(+++)","test_auto":"Test(常染色体)1","note3":"T18;T21;T13;完全三体可能性不大，存在一定比例嵌合","note2":"完全三体可能性不大，存在一定比例嵌合","disease":"疾病名称1","qc":"通过","report_tag":"$2p33.1_deletion$"},{"num":"","sampleType":"S051-全血","Lane":"L02","index":"2","productNum":"DX1331","tireType":"单胎","qualityControl":"否","CNV_info":"del(2q32.3-q33.3,8.28Mb)","CNV_section_info":"del(2:196925121-205206940)","test13":"T13高危","test18":"T18高危","test21":"T21高危","test_sex":"其它复杂异常(+++)","test_auto":"Test(常染色体)1","note3":"T18;T21;T13;完全三体可能性不大，存在一定比例嵌合","note2":"完全三体可能性不大，存在一定比例嵌合","disease":"疾病名称1","qc":"通过","report_tag":"$2p33.1_deletion$"},{"num":"","sampleType":"S051-全血","Lane":"L03","index":"3","productNum":"DX1331","tireType":"单胎","qualityControl":"否","CNV_info":"del(2q32.3-q33.3,8.28Mb)","CNV_section_info":"del(2:196925121-205206940)","test13":"T13高危","test18":"T18高危","test21":"T21高危","test_sex":"其它复杂异常(+++)","test_auto":"Test(常染色体)1","note3":"T18;T21;T13;完全三体可能性不大，存在一定比例嵌合","note2":"完全三体可能性不大，存在一定比例嵌合","disease":"疾病名称1","qc":"通过","report_tag":"$2p33.1_deletion$"},{"num":"","sampleType":"S051-全血","Lane":"L04","index":"3","productNum":"DX1331","tireType":"单胎","qualityControl":"否","CNV_info":"del(2q32.3-q33.3,8.28Mb)","CNV_section_info":"del(2:196925121-205206940)","test13":"T13高危","test18":"T18高危","test21":"T21高危","test_sex":"其它复杂异常(+++)","test_auto":"Test(常染色体)1","note3":"T18;T21;T13;完全三体可能性不大，存在一定比例嵌合","note2":"完全三体可能性不大，存在一定比例嵌合","disease":"疾病名称1","qc":"通过","report_tag":"$2p33.1_deletion$"}]
+path1
+0
+0
+1
+testuser1
+6M
+NIFTY1-48
+MGISEQ-2000
+SE35+10
+否
+V350231139
+inland

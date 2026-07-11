@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="/simpleExcelTable/jquery.min.js"></script>
+    <script src="/simpleExcelTable/StringUtil.js"></script>
+    <script src="/simpleExcelTable/Tag.js"></script>
+    <script src="/simpleExcelTable/exceltable.js"></script>
+    <script src="/simpleExcelTable/xlsx.min.js"></script>
+    <link rel="stylesheet" href="/static/loading_mask/load.css"  media="all">
+    <script src="/loading_mask/load.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="/static/simpleExcelTable/exceltable.css"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>NIFTY造数工具</title>
+    <style>
+  .centered-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    /*position: relative;*/
+    /*z-index: 10;*/
+  }
+  #clearButton {
+    display: none;
+  }
+  form,table {
+    width: 60%; /* Or any other width */
+    padding: 1%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 0;
+  }
+body { font-family: 微软雅黑; }
+.my-button {
+  width: 120px;
+  height: 30px;
+  padding: 2px 2px;
+    float: right;
+    border-radius: 8px;
+}
+table {
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    /*margin: 10px 0;*/
+    border-collapse: collapse; /* 折叠边框 */
+    background-color: #f0f0f0;
+    font-size: 16px;
+    font-family: 微软雅黑;
+    width: 62%; /* Or any other width */
+    /*padding: 20px;*/
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
+}
+  table, th, td {
+    border: 1px solid black;   /* 设置单线黑色边框 */
+  }
+</style>
+    <script type="text/javascript">
+    function autoNumber() {
+      var rows = document.getElementById('excelTable').rows;
+      for (var i = 1; i < rows.length; i++) {
+        rows[i].cells[0].textContent = i;
+      }
+    }
+    </script>
+</head>
+<body style="background-image: url('https://nifty-test.bgi.com/presapMS/static/media/login-compress.png');" onload="autoNumber()">
+<div id="loading-overlay">
+  <div class="loader"></div>
+</div>
+<div class="centered-container">
+    <form id="myForm" action="/nifty" method="post" style="background-color: #f0f0f0; font-size: 16px;">
+        <a>样本信息:</a><a style="font-size: 12px;float: right;position: relative;top: 23px;right: 11px;color: #ff8a1e">&#9888; 以下样本默认7、8、18号染色体异常，如需修改请填写对应的信息</a>
+        <textarea id="myData" name="myData" type="text" style="visibility: hidden;">{{ myData }}</textarea>
+        <div style="border: 1px solid #000; margin: 8px; padding:10px">
+        <div id="table" name="myTable" class="full" style="max-height: 450px">
+        </div>
+        <br />
+        <div>
+            <button class="my-button" id="copyRowBtn" type="button" style="background-color: #4096FF; color: white;">新增一行</button>
+            从第<input id="deleteRow_n1" value="1" style="width: 20px">行及后面的<input id="deleteRow_n2" value="1" style="width: 20px">行 <button id="deleteRowBtn" type="button" style="background-color: #FF4D4F; color: white;width: 80px;height: 30px;padding: 2px 2px;border-radius: 8px">删除</button>
+    </div><br />
+            <label id="file-label" for="file" style="background-color: #4096FF;font-size: 14px;color: white;margin-right:10px;padding: 3px;border: 1px solid #000;border-radius: 8px;">导入样本信息
+            </label>
+            <input id="file" accept=".xlsx" type="file" name="file" style="margin-top:10px;width: 145px;background-color: #4096FF;display:none;"/>
+            <button id="clearButton" type="button" onclick="clearFile()" style="font-size: 14px;margin-right:10px;padding: 3px;border: 1px solid #000;border-radius: 8px;">
+            &#128465;清除
+            </button>&nbsp; &nbsp;
+            <a href="{{ url_for('download_template') }}" style="font-size: 14px;">模板下载</a>&nbsp; &nbsp; &nbsp;
+            <a href="{{ url_for('download_csv') }}" target="_blank" style="font-size: 14px;">导出样本信息</a>
+        </div>
+        <span >配置项：</span>
+        <div style="border: 1px solid #000; margin: 8px; padding:10px">
+        <span >运行环境：</span>
+        <select id="env_dropdown" name="env_dropdown" required style="font-size: 16px;">
+            <option value="inland" {{ 'inland' == data_dropdown and 'selected' or '' }}>内地环境</option>
+            <option value="HK" {{ 'HK' == data_dropdown and 'selected' or '' }}>香港环境</option>
+        </select>
+        <br /><br />
+        <span >生成数据量：</span>
+        <select id="data_dropdown" name="data_dropdown" required style="font-size: 16px;">
+            <option value="6M" {{ '6M' == data_dropdown and 'selected' or '' }}>6M</option>
+            <option value="25M" {{ '25M' == data_dropdown and 'selected' or '' }}>25M</option>
+            <option value="100M" {{ '100M' == data_dropdown and 'selected' or '' }}>100M</option>
+            <option value="1G" {{ '1G' == data_dropdown and 'selected' or '' }}>1G</option>
+        </select>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        <span >Index配置：</span>
+        <select id="index_dropdown" name="index_dropdown" required style="font-size: 16px;">
+            <option value="NIFTY1-48" {{ 'NIFTY1-48' == index_dropdown and 'selected' or '' }}>NIFTY1-48</option>
+            <option value="NIFTY1-96" {{ 'NIFTY1-96' == index_dropdown and 'selected' or '' }}>NIFTY1-96</option>
+        </select>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        <span >测序平台：</span>
+        <select id="platform_dropdown" name="platform_dropdown" required style="font-size: 16px;">
+            <option value="MGISEQ-2000" {{ 'MGISEQ-2000' == platform_dropdown and 'selected' or '' }}>MGISEQ-2000</option>
+            <option value="DNBSEQ-T7" {{ 'DNBSEQ-T7' == platform_dropdown and 'selected' or '' }}>DNBSEQ-T7</option>
+        </select>
+            <br /><br />
+        <span >测序类型：</span>
+        <select id="type_dropdown" name="type_dropdown" required style="font-size: 16px;">
+            <option value="SE35+10" {{ 'SE35+10' == type_dropdown and 'selected' or '' }}>SE35+10</option>
+            <option value="SE50+10" {{ 'SE50+10' == type_dropdown and 'selected' or '' }}>SE50+10</option>
+            <option value="PE100+10" {{ 'PE100+10' == type_dropdown and 'selected' or '' }}>PE100+10</option>
+        </select>&nbsp; &nbsp; &nbsp; &nbsp;
+        <span >自定义芯片号：</span>&nbsp;&nbsp;
+        <select id="chip_dropdown" name="chip_dropdown" required style="font-size: 16px;">
+            <option value="否" {{ '否' == chip_dropdown and 'selected' or '' }}>否</option>
+            <option value="是" {{ '是' == chip_dropdown and 'selected' or '' }}>是</option>
+        </select>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+<!--        <span >预设Pooling总量：</span>-->
+<!--        <select id="pooling_dropdown" name="pooling_dropdown" required style="font-size: 16px;">-->
+<!--            <option value="160" {{ '160' == pooling_dropdown and 'selected' or '' }}>160</option>-->
+<!--            <option value="320" {{ '320' == pooling_dropdown and 'selected' or '' }}>320</option>-->
+<!--            <option value="480" {{ '480' == pooling_dropdown and 'selected' or '' }}>480</option>-->
+<!--            <option value="640" {{ '640' == pooling_dropdown and 'selected' or '' }}>640</option>-->
+<!--            <option value="800" {{ '800' == pooling_dropdown and 'selected' or '' }}>800</option>-->
+<!--            <option value="960" {{ '960' == pooling_dropdown and 'selected' or '' }}>960</option>-->
+<!--            <option value="1280" {{ '1280' == pooling_dropdown and 'selected' or '' }}>1280</option>-->
+<!--            <option value="1600" {{ '1600' == pooling_dropdown and 'selected' or '' }}>1600</option>-->
+<!--        </select>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;-->
+        <span >芯片号：</span>
+        <input id="chip_input" name="chip_input" style="font-size: 16px;" value="{{chip_input}}">
+            </div>
+        <span >执行:</span>
+        <div style="border: 1px solid #000; margin: 8px; padding:10px">
+        <span >执行场景：&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span>
+        <select id="dropdown" name="dropdown" required style="font-size: 16px;">
+            <option value="">请选择一个选项</option>
+            <option value="path1" {{ 'path1' == dropdown and 'selected' or '' }}>NIFTY-主流程测试场景1</option>
+            <option value="path2" {{ 'path2' == dropdown and 'selected' or '' }}>NIFTY-主流程测试场景2</option>
+            <option value="path3" {{ 'path3' == dropdown and 'selected' or '' }}>NIFTY-主流程测试场景3</option>
+            <option value="path4" {{ 'path4' == dropdown and 'selected' or '' }}>NIFTY-主流程测试场景4</option>
+            <option value="path5" {{ 'path5' == dropdown and 'selected' or '' }}>NIFTY-主流程测试场景5</option>
+        </select>
+        <br />
+        <a>场景对应的技术路线</a>
+        <br />
+        <textarea rows="5" id="textbox" name="textbox" style="width: 100%; font-family: 微软雅黑; font-size: 16px;" >{{textbox}}</textarea>
+        <br /><br />
+        <a>请输入要执行到哪步：</a>
+        <input type="number" name="input1" placeholder="执行到第3步，请输入3" min="0" step="1" required style="font-size: 16px;" value="{{input1}}">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;<a>是否登记异常：</a>
+        <select id="exce_dropdown" name="exce_dropdown" required style="font-size: 16px;">
+            <option value="0" {{ '0' == exce_dropdown and 'selected' or '' }}>否</option>
+            <option value="1" {{ '1' == exce_dropdown and 'selected' or '' }}>是</option>
+        </select>
+        <br /><br />
+<!--        <a>执行次数：&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</a>-->
+<!--        <input type="number" name="input2" placeholder="如要执行1次，请输入1" min="1" step="1" required style="font-size: 16px;visibility: hidden;" value="1">-->
+        <a>执行账号：</a>
+        <select id="user_dropdown" name="user_dropdown" required style="font-size: 16px;">
+<!--            <option value="">请选择一个选项</option>-->
+            <option value="testuser1" {{ 'testuser1' == user_dropdown and 'selected' or '' }}>c-xufeng</option>
+        </select>
+            </div>
+        <br />
+        <button class="my-button" type="submit" style="background-color: #4096FF;color: white;">执行</button>
+    </form>
+    {% if table_data %}
+<table>
+        <thead>
+            <tr>
+                <th>注解</th>
+                <th>执行返回的字段名称</th>
+                <th>返回值</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in table_data %}
+<!--                        <tr style="background-color: #4096FF;">-->
+<!--                <td>执行次数</td>-->
+<!--                <td>exec_num</td>-->
+<!--                <td>{{ loop.index }}</td>-->
+<!--            </tr>-->
+            {% for row in data %}
+            <tr>
+                <td>{{ row.translate }}</td>
+                <td>{{ row.name }}</td>
+                <td>{{ row.value }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+    </div>
+{% if value %}
+<p  id="failure_text" style="color: red; text-align: center;">执行失败：{{ value }}</p>
+{% endif %}
+</body>
+<script>
+    document.getElementById("file").addEventListener("change", function () {
+        if (this.value) {
+            clearButton.style.display = 'inline-block';
+            document.getElementById("file-label").innerHTML = this.value.split("\\").pop();
+            readExcelWithSheetJS();
+        }
+    });
+    function clearFile() {
+            file.value = '';
+            document.getElementById("file-label").innerHTML = "请重新导入";
+            var data = obj.getData();
+            obj.deleteRow(0, data.length);
+            clearButton.style.display = 'none';
+        }
+    var selectSampleOptions = [
+        {k:'S051-全血',v:'S051-全血'},
+        {k:'S052-血浆',v:'S052-血浆'},
+    ];
+    var selectTireOptions = [
+        {k:'单胎',v:'单胎'},
+        {k:'双胎',v:'双胎'},
+        {k:'双胎减胎',v:'双胎减胎'},
+    ];
+    var list =[
+        {sampleType:'S051-全血',Lane:'L01',index:'1',productNum:'DX1331',tireType:'单胎',qualityControl:'否',ZTUBETYPE:'K牌采血管'},
+        {sampleType:'S051-全血',Lane:'L02',index:'2',productNum:'DX1331',tireType:'单胎',qualityControl:'否',ZTUBETYPE:'K牌采血管'},
+        {sampleType:'S051-全血',Lane:'L03',index:'3',productNum:'DX1331',tireType:'单胎',qualityControl:'否',ZTUBETYPE:'K牌采血管'},
+        {sampleType:'S051-全血',Lane:'L04',index:'4',productNum:'DX1331',tireType:'单胎',qualityControl:'否',ZTUBETYPE:'K牌采血管'}
+    ];
+    var ZTUBETYPE_list =[
+        {k:'G牌采血管',v:'G牌采血管'},
+        {k:'EDTA',v:'EDTA'},
+        {k:'K牌采血管',v:'K牌采血管'},
+        {k:'STRECK',v:'STRECK'},
+        {k:'Z管',v:'Z管'},
+        {k:'B牌采血管',v:'B牌采血管'},
+        {k:'C牌采血管',v:'C牌采血管'},
+        {k:'L牌采血管',v:'L牌采血管'},
+    ];
+    var excelData = document.getElementById('myData').value
+    if (excelData){
+        mask_close_all()
+        excelData = JSON.parse(excelData)
+        var obj = $("#table").initExcelTable({
+        //是否显示列头
+        showHeader:true,
+        columns: [
+            {
+                //设置表头
+                header:{text:"序号",css:{'font-weight':'bold','background': '#cff'}},
+                //设置列名
+                fieldName:'num',
+                readonly:true,
+                //设置单元格类型，目前支持input(输入框)、select(下拉框)、checkbox、radio
+                type:"input",width:50},
+            {header:{text:"样本类型",css:{'font-weight':'bold','background': '#cff'}},fieldName:'sampleType',type:"select",width:100,list:selectSampleOptions,defaultValue:'key1'},
+            {
+                //设置表头
+                header:{text:"Lane",css:{'font-weight':'bold','background': '#cff'}},
+                //设置列名
+                fieldName:'Lane',
+                //设置单元格类型，目前支持input(输入框)、select(下拉框)、checkbox、radio
+                type:"input",width:50,emptyText:"请填写Lane",
+                cellStyle:{align:'center'}},
+            {header:{text:"index",css:{'font-weight':'bold','background': '#cff'}},fieldName:'index',type:"input",width:50,emptyText:"输入数字...",
+                cellStyle:{align:'center'}},
+            {header:{text:"产品编号",css:{'font-weight':'bold','background': '#cff'}},fieldName:'productNum',type:"input",width:80},
+            {header:{text:"胎型",css:{'font-weight':'bold','background': '#cff'}},fieldName:'tireType',type:"select",width:80,list:selectTireOptions,defaultValue:'key1'},
+            {header:{text:"是否阴阳质控品",css:{'font-weight':'bold','background': '#cff'}},fieldName:'qualityControl',type:"select",width:110,list:[{k:'否',v:'否'},{k:'是',v:'是'}],defaultValue:'key1'},
+            {header:{text:"指定样本号",css:{'font-weight':'bold','background': '#cff'}},fieldName:'special_sample_id',type:"input",width:110},
+            {header:{text:"CNV区带信息（非必填）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'CNV_info',width:180,type:"input"},
+            {header:{text:"CNV区间信息（非必填，若填写，则区带信息和区间信息必须都填）",css:{'font-weight':'bold','background': '#cff'}},width:200,fieldName:'CNV_section_info',type:"input"},
+            {header:{text:"test13",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test13',width:150,type:"input"},
+            {header:{text:"test18",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test18',width:150,type:"input"},
+            {header:{text:"test21",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test21',width:150,type:"input"},
+            {header:{text:"test_sex(性染色体)",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test_sex',width:150,type:"input"},
+            {header:{text:"test_auto（常染色体）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test_auto',width:150,type:"input"},
+            {header:{text:"note3（梧桐）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'note3',width:150,type:"input"},
+            {header:{text:"note2",css:{'font-weight':'bold','background': '#cff'}},fieldName:'note2',width:150,type:"input"},
+            {header:{text:"disease疾病名称",css:{'font-weight':'bold','background': '#cff'}},fieldName:'disease',width:150,type:"input"},
+            {header:{text:"qc",css:{'font-weight':'bold','background': '#cff'}},fieldName:'qc',width:50,type:"input"},
+            {header:{text:"chr（染色体编号）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'chr',width:150,type:"input"},
+            {header:{text:"chrTest（Test值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'chrTest',width:150,type:"input"},
+            {header:{text:"filterFlag（是否过滤：0否 1是）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'filterFlag',width:150,type:"input"},
+            {header:{text:"fra（胎儿浓度）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'fra',width:150,type:"input"},
+            {header:{text:"risk（Risk值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'risk',width:150,type:"input"},
+            {header:{text:"t（T值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'t',width:150,type:"input"},
+            {header:{text:"zScore（Z值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'zScore',width:150,type:"input"},
+            {header:{text:"report_tag报告标签",css:{'font-weight':'bold','background': '#cff'}},fieldName:'report_tag',width:150,type:"input"},
+            {header:{text:"样品管类型",css:{'font-weight':'bold','background': '#cff'}},fieldName:'ZTUBETYPE',type:"select",width:100,list:ZTUBETYPE_list,defaultValue:'key3'}
+        ],
+        //初始化行数
+        row: excelData.length
+    });
+        obj.setData(excelData);
+    }else {
+        // mask_fullscreen()
+        var obj = $("#table").initExcelTable({
+        //是否显示列头
+        showHeader:true,
+        columns: [
+            {
+                //设置表头
+                header:{text:"序号",css:{'font-weight':'bold','background': '#cff'}},
+                //设置列名
+                fieldName:'num',
+                readonly:true,
+                //设置单元格类型，目前支持input(输入框)、select(下拉框)、checkbox、radio
+                type:"input",width:50},
+            {header:{text:"样本类型",css:{'font-weight':'bold','background': '#cff'}},fieldName:'sampleType',type:"select",width:100,list:selectSampleOptions,defaultValue:'key1'},
+            {
+                //设置表头
+                header:{text:"Lane",css:{'font-weight':'bold','background': '#cff'}},
+                //设置列名
+                fieldName:'Lane',
+                //设置单元格类型，目前支持input(输入框)、select(下拉框)、checkbox、radio
+                type:"input",width:50,emptyText:"请填写Lane",
+                cellStyle:{align:'center'}},
+            {header:{text:"index",css:{'font-weight':'bold','background': '#cff'}},fieldName:'index',type:"input",width:50,emptyText:"输入数字...",
+                cellStyle:{align:'center'}},
+            {header:{text:"产品编号",css:{'font-weight':'bold','background': '#cff'}},fieldName:'productNum',type:"input",width:80},
+            {header:{text:"胎型",css:{'font-weight':'bold','background': '#cff'}},fieldName:'tireType',type:"select",width:80,list:selectTireOptions,defaultValue:'key1'},
+            {header:{text:"是否阴阳质控品",css:{'font-weight':'bold','background': '#cff'}},fieldName:'qualityControl',type:"select",width:110,list:[{k:'否',v:'否'},{k:'是',v:'是'}],defaultValue:'key1'},
+            {header:{text:"指定样本号",css:{'font-weight':'bold','background': '#cff'}},fieldName:'special_sample_id',type:"input",width:110},
+            {header:{text:"CNV区带信息（非必填）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'CNV_info',width:180,type:"input"},
+            {header:{text:"CNV区间信息（非必填，若填写，则区带信息和区间信息必须都填）",css:{'font-weight':'bold','background': '#cff'}},width:200,fieldName:'CNV_section_info',type:"input"},
+            {header:{text:"test13",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test13',width:150,type:"input"},
+            {header:{text:"test18",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test18',width:150,type:"input"},
+            {header:{text:"test21",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test21',width:150,type:"input"},
+            {header:{text:"test_sex(性染色体)",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test_sex',width:150,type:"input"},
+            {header:{text:"test_auto（常染色体）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'test_auto',width:150,type:"input"},
+            {header:{text:"note3（梧桐）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'note3',width:150,type:"input"},
+            {header:{text:"note2",css:{'font-weight':'bold','background': '#cff'}},fieldName:'note2',width:150,type:"input"},
+            {header:{text:"disease疾病名称",css:{'font-weight':'bold','background': '#cff'}},fieldName:'disease',width:150,type:"input"},
+            {header:{text:"qc",css:{'font-weight':'bold','background': '#cff'}},fieldName:'qc',width:50,type:"input"},
+            {header:{text:"chr（染色体编号）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'chr',width:150,type:"input"},
+            {header:{text:"chrTest（Test值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'chrTest',width:150,type:"input"},
+            {header:{text:"filterFlag（是否过滤：0否 1是）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'filterFlag',width:150,type:"input"},
+            {header:{text:"fra（胎儿浓度）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'fra',width:150,type:"input"},
+            {header:{text:"risk（Risk值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'risk',width:150,type:"input"},
+            {header:{text:"t（T值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'t',width:150,type:"input"},
+            {header:{text:"zScore（Z值）",css:{'font-weight':'bold','background': '#cff'}},fieldName:'zScore',width:150,type:"input"},
+            {header:{text:"report_tag报告标签",css:{'font-weight':'bold','background': '#cff'}},fieldName:'report_tag',width:150,type:"input"},
+            {header:{text:"样品管类型",css:{'font-weight':'bold','background': '#cff'}},fieldName:'ZTUBETYPE',type:"select",width:100,list:ZTUBETYPE_list,defaultValue:'key3'}
+        ],
+        //初始化行数
+        row: 4
+    });
+    //设置表格数据
+        obj.setData(list);
+        // console.log(list);
+    }
+    $("#getDataBtn").click(function(){
+        $("#data").val('');
+        var data = obj.getData();
+        $(document.documentElement).animate({scrollTop:document.documentElement.scrollHeight},300);
+        setTimeout(function(){
+            $("#data").val(JSON.stringify(data,null,2));
+        },280);
+    });
+    $("#useBtn").click(function(){
+        $(document.documentElement).animate({scrollTop:$(".use-code").offset().top},300);
+    });
+    $("#hideHeaderBtn").click(function(){
+        obj.hideHeader(obj.showHeader);
+    });
+    $("#getRowDataBtn").click(function(){
+        var n = StringUtil.safeToString($("#getRowData_n").val(),'1');
+        // console.log(n);
+        alert(JSON.stringify(obj.getRowData(n),null,2));
+    });
+    $("#insertRowBtn").click(function(){
+        var n1 = StringUtil.safeToString($("#insertRow_n1").val(),'1');
+        var n2 = StringUtil.safeToString($("#insertRow_n2").val(),'1');
+        obj.insertRow(n1,n2);
+    });
+    $("#deleteRowBtn").click(function() {
+        var n1 = StringUtil.safeToString($("#deleteRow_n1").val(), '1');
+        var n2 = StringUtil.safeToString($("#deleteRow_n2").val(), '1');
+        obj.deleteRow(n1, n2);
+        autoNumber();
+    });
+    $("#copyRowBtn").click(function(){
+        var data = obj.getData();
+        var row1 = obj.getRowData(data.length);
+        obj.insertRow(data.length,1);
+        obj.setRowData(data.length+1,row1);
+        autoNumber();
+    });
+    document.getElementById('dropdown').addEventListener('change', function() {
+        var selectedValue = this.value;
+        if (selectedValue=='path1'){
+            document.getElementById('textbox').value = "0:样本到样--1:技术路线确认--2:血浆分离--3:建库--4:BMG--5:Pooling--6:单链环化--7:MakeDNB-8:上机--9:信息分析--10：数据审核";
+        }
+        if (selectedValue=='path2'){
+            document.getElementById('textbox').value = "0:样本到样--1:技术路线确认--2:血浆分离--3:建库--4:BMG--5:Pooling--6：质检产物"
+        }
+        if (selectedValue=='path3') {
+            document.getElementById('textbox').value = "0:样本到样--1:技术路线确认--2:血浆分离--3：重复质控品"
+        }
+        if (selectedValue=='path4') {
+            document.getElementById('textbox').value = "0:样本到样--1:技术路线确认--2:血浆分离--3：产物补录"
+        }
+        if (selectedValue=='path5') {
+            document.getElementById('textbox').value = "0:样本到样--1:技术路线确认--2:血浆分离--3:建库--4:BMG--5:Pooling--6:单链环化--7:MakeDNB-8:上机--9:信息分析--10：数据审核--11：报告生成--12：报告确认--13：报告审核--14：报告认领--15：报告复核"
+        }
+    });
+    document.getElementById('chip_dropdown').addEventListener('change', function() {
+        var selectedValue = this.value;
+        if (selectedValue=='是'){
+            document.getElementById('chip_input').value = "V350231139"
+        }
+        if (selectedValue=='否'){
+            document.getElementById('chip_input').value = ""
+        }
+    });
+    function mask_fullscreen(){
+        showLoading()
+    }
+    function mask_close_all(){
+        hideLoading()
+    }
+	document.getElementById('myForm').addEventListener('submit', handleFormSubmit);
+    function handleFormSubmit(event) {
+        if (obj.getData().length===0){
+            alert("正确填写样本信息!");
+            event.preventDefault();
+        }
+        if (obj.getData().length>0) {
+            document.getElementById('myData').value = JSON.stringify(obj.getData());
+            mask_fullscreen()
+        }
+    }
+    var content = document.getElementById('failure_text').textContent;
+    if (content.length>5){
+        mask_close_all()
+    }
+    function readExcelWithSheetJS() {
+        const fileInput = document.getElementById('file');
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = function () {
+                const data = new Uint8Array(reader.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                const newArray = jsonData.map(obj => {
+                    const newObj = {};
+                    for (const [key, value] of Object.entries(obj)) {
+                        if (key === '产品编号') {
+                            newObj.productNum = value;
+                        } else if (key === '是否需要质控品') {
+                            newObj.qualityControl = value;
+                        } else if (key === '样本类型') {
+                            newObj.sampleType = value;
+                        } else if (key === '胎型') {
+                            newObj.tireType = value;
+                        } else if (key === 'CNV区带信息') {
+                            newObj.CNV_info = value;
+                        } else if (key === 'CNV区间信息') {
+                            newObj.CNV_section_info = value;
+                        } else if (key === 'test_sex(性染色体)') {
+                            newObj.test_sex = value;
+                        } else if (key === 'test_auto（常染色体）') {
+                            newObj.test_auto = value;
+                        } else if (key === 'note3（梧桐）') {
+                            newObj.note3 = value;
+                        } else if (key === 'disease疾病名称') {
+                            newObj.disease = value;
+                        }
+                        else if (key === '指定样本号') {
+                            newObj.special_sample_id = value;
+                        }
+                        else if (key === 'chr（染色体编号）') {
+                            newObj.chr = value;
+                        }
+                        else if (key === 'chrTest（Test值）') {
+                            newObj.chrTest = value;
+                        }
+                        else if (key === 'filterFlag（是否过滤：0否 1是）') {
+                            newObj.filterFlag = value;
+                        }
+                        else if (key === 'zScore（Z值）') {
+                            newObj.zScore = value;
+                        }
+                        else if (key === 'fra（胎儿浓度）') {
+                            newObj.fra = value;
+                        }
+                        else if (key === 'risk（Risk值）') {
+                            newObj.risk = value;
+                        }
+                        else if (key === 't（T值）') {
+                            newObj.t = value;
+                        }
+                        else if (key ==='样品管类型') {
+                            newObj.ZTUBETYPE = value;
+                        }
+                        else if (key === 'report_tag报告标签') {
+                            newObj.report_tag = value;
+                        } else if (key === 'index') {
+                            newObj['index'] = `${value}`;
+                        }
+                        else {
+                            newObj[key] = value;
+                        }
+                    }
+                    if (!('ZTUBETYPE' in newObj)) {
+                        newObj.ZTUBETYPE = 'K牌采血管';
+                    }
+                    return newObj;
+                });
+                // console.log(newArray)
+                obj.deleteRow(0, obj.getData().length);
+                obj.setData(newArray);
+                autoNumber();
+            };
+            if (file) {
+                reader.readAsArrayBuffer(file);
+            }
+        }
+    }
+</script>
+</html>

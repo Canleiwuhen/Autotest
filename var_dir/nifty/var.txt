@@ -1,0 +1,12 @@
+[{"num":"","sampleType":"S051-È«Ñª","Lane":"L01","index":"1","productNum":"DX1331","tireType":"µ¥Ì¥","qualityControl":"·ñ","CNV_info":"","CNV_section_info":"","test13":"","test18":"","test21":"","test_sex":"","test_auto":"","note3":"","note2":"","disease":"","qc":"","report_tag":""},{"num":"","sampleType":"S051-È«Ñª","Lane":"L01","index":"2","productNum":"DX1331","tireType":"µ¥Ì¥","qualityControl":"·ñ","CNV_info":"","CNV_section_info":"","test13":"","test18":"","test21":"","test_sex":"","test_auto":"","note3":"","note2":"","disease":"","qc":"","report_tag":""},{"num":"","sampleType":"S051-È«Ñª","Lane":"L01","index":"3","productNum":"DX1331","tireType":"µ¥Ì¥","qualityControl":"·ñ","CNV_info":"","CNV_section_info":"","test13":"","test18":"","test21":"","test_sex":"","test_auto":"","note3":"","note2":"","disease":"","qc":"","report_tag":""}]
+path1
+1
+0
+1
+testuser1
+6M
+NIFTY1-48
+MGISEQ-2000
+SE35+10
+·ñ
+V350231139
