@@ -1,0 +1,25 @@
+#登录环境url
+test_url: https://sample-test.bgi.com
+data_factory_url: http://10.227.4.150:8084
+
+#登录账号密码
+user:
+  sitest:
+    username: huxiaofeng_A020
+    password: huxiaofeng_A020
+
+  testuser1:
+    username: autotest1
+    password: huEV22%!
+
+  testuser2:
+    username: autotest2
+    password: iiQR41*@
+
+#后端数据连接信息
+mysql:
+  db: test_system
+  host: 666.888.999.555
+  password: 123456
+  port: 3306
+  user: root

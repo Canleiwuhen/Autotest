@@ -1,0 +1,20 @@
+#登录环境url
+test_url: http://10.227.5.231:8080
+
+#登录账号密码
+user:
+  sitest:
+    username: admin
+    password: 162ef5056767937c53148ef6b78a1d935e8f80b2ce904a7ffa8f25d6977db5a2
+
+  sitest1:
+    username: huangxianhui
+    password: 1cab49913275212bd71bb68b5bbe17051b1efba786a1c7b7f50a28e58d237a6f
+
+#后端数据连接信息
+mysql:
+  db: test_system
+  host: 10.227.5.231
+  password: wyscw1@halos
+  port: 30306
+  user: root

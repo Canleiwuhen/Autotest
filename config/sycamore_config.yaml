@@ -1,0 +1,18 @@
+#登录环境url
+test_url: http://test.sycamore.com/
+
+#登录账号密码
+user:
+  testuser1:
+    username: syc_autotest
+    password: sycamore@2025!
+
+#梧桐测试环境数据连接信息
+mysql:
+  host: 10.227.4.164
+  port: 80
+  user: sycamore
+  password: Sycamore_test!2021@
+  charset: utf8mb4
+  database: sycamore
+

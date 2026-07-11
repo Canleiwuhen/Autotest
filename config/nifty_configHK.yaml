@@ -1,0 +1,30 @@
+#登录环境url
+# test_url: https://nifty-test.bgi.com
+# mybgi_url: https://mybgitest.bgi.com
+test_url: https://nifty-test-hk.bgi.com/
+mybgi_url: https://mybgitest-hk.bgi.com/
+
+#推送分析结果url
+save_nifty_result: http://10.227.5.184:8686
+
+#登录账号密码
+user:
+  testuser1:
+    username: c-xufeng
+    password: Gene99@&aYu4
+
+#后端数据连接信息
+mysql:
+  db: test_system
+  host: 666.888.999.555
+  password: 123456
+  port: 3306
+  user: root
+
+# 千寻测试环境数据库配置
+chihiro_db:
+  host: 10.227.5.153
+  port: 5052
+  user: usr_chihiro
+  password: eeC227$v5
+  database: chihiro

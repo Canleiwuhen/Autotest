@@ -1,0 +1,27 @@
+#登录环境url
+test_url: https://omicsone-hd-test.bgi.com
+
+
+#登录账号密码
+user:
+  sitest:
+    username: autotest_center_delivery
+    password: autotest_omics@2025
+
+  sitest1:
+    username: autotest_center_delivery1
+    password: autotest_omics@2025
+
+  # 专家云服务权限
+  sitest2:
+    username: autotest_cloud
+    password: autotest_omics@2025
+
+
+#后端数据连接信息
+mysql:
+  db: omics_one_test
+  host: 10.227.17.17
+  password: Lajo5LR!Z9PW%$
+  port: 80
+  user: usr_omics_test

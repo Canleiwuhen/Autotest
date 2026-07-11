@@ -1,0 +1,48 @@
+#登录环境url-未拆分版
+#test_url: https://omicsone-test.bgi.com
+# 登录环境url-已拆分版
+test_url: http://omicsone-new-test.bgi.com
+
+
+#登录账号密码
+user:
+  sitest:
+    username: autotest_omics1
+    password: autotest_omics@2025
+
+  sitest1:
+    username: autotest_omics2
+    password: autotest_omics@2025
+
+  sitest2:
+    username: autotest_omics3
+    password: autotest_omics@2025
+
+  sitest4:
+    username: autotest_cnvseq
+    password: autotest_omics@2025
+
+  sitest5:
+    username: autotest_nifty
+    password: autotest_omics@2025
+
+  sitest6:
+    username: autotest_cs
+    password: autotest_omics@2025
+
+  sitest7:
+    username: autotest_nbs
+    password: autotest_omics@2025
+
+
+
+mysql:
+  # 后端数据连接信息-未拆分版
+#  db: omics_one
+  # 后端数据连接信息-已拆分版
+  db: omics_one_micro
+  host: 10.227.5.187
+  password: omicsone0505
+  port: 8070
+  user: usr_omics
+
